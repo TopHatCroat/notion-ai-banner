@@ -1,4 +1,5 @@
 const { getNewPagesFromNotion, getPageSummariesAndProperties } = require('../utils/notion');
+const s3Client = require('../utils/s3Client');
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
@@ -27,6 +28,9 @@ const generateImageWithOpenAI = async (description, styles) => {
       const filePath = path.resolve(__dirname, '../banners', fileName);
 
       await fs.promises.writeFile(filePath, resizedBuffer);
+
+      await s3Client.uploadFile(filePath);
+
       return filePath;
     } else {
       throw new Error('No image data received from OpenAI API.');

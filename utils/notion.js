@@ -13,7 +13,8 @@ const getNewPagesFromNotion = async () => {
       return page.cover === null;
     });
 
-    return pagesWithoutCoverImage;
+    // return pagesWithoutCoverImage;
+    return [pagesWithoutCoverImage[0]];
   } catch (error) {
     console.error('Error fetching pages from Notion:', error);
     console.error('Response data:', error.response.data);

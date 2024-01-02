@@ -1,4 +1,5 @@
 const { generateBannerImage } = require('../services/bannerGenerationService');
+const { generateBannerForNewPages } = require('../services/bannerGenerationService');
 
 const handleGenerateBanner = async (req, res) => {
   const { title, content, style } = req.body;
