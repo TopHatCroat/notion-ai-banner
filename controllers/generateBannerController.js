@@ -1,28 +1,30 @@
 const { generateBannerImage } = require('../services/bannerGenerationService');
 const { generateBannerForNewPages } = require('../services/bannerGenerationService');
+const { getSinglePageFromNotion, getPageSummariesAndProperties, updatePageCover } = require("../utils/notion");
 
 const handleGenerateBanner = async (req, res) => {
-  const { title, content, style } = req.body;
+  const { pageId } = req.body;
 
-  if (!title || !content) {
+  if (!pageId) {
     return res.status(400).json({
-      message: 'Missing required page data properties',
+      message: 'Missing required pageId in request body',
     });
   }
 
   try {
     // Convert the received styles to the format expected by the extractStyles function
-    const pageData = {
-      summary: content,
-      style: style ? style : [],
-    };
+    const page = await getSinglePageFromNotion(pageId);
 
-    const imagePath = await generateBannerImage(pageData);
+    const pageData = await getPageSummariesAndProperties(page);
+
+    const imageUrl = await generateBannerImage(pageData);
     // INPUT_REQUIRED {Replace the placeholder below with actual URL path to the generated image, e.g., upload the image to a server and use the file URL here}
-    const imageUrlPlaceholder = 'http://example.com/path/to/image';
+    await updatePageCover(pageData.id, imageUrl);
+
     res.status(200).json({
       message: 'Banner generated successfully',
-      imageUrl: imageUrlPlaceholder,
+      imageUrl: imageUrl,
+      pageId: pageData.id,
     });
   } catch (error) {
     console.error('Error generating banner image:', error);

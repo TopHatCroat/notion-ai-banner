@@ -1,4 +1,4 @@
-const { getNewPagesFromNotion, getPageSummariesAndProperties } = require('../utils/notion');
+const { getNewPagesFromNotion, getPageSummariesAndProperties, updatePageCover } = require('../utils/notion');
 const s3Client = require('../utils/s3Client');
 const sharp = require('sharp');
 const fs = require('fs');
@@ -29,9 +29,9 @@ const generateImageWithOpenAI = async (description, styles) => {
 
       await fs.promises.writeFile(filePath, resizedBuffer);
 
-      await s3Client.uploadFile(filePath);
+      const { url } = await s3Client.uploadFile(filePath);
 
-      return filePath;
+      return url;
     } else {
       throw new Error('No image data received from OpenAI API.');
     }
@@ -42,7 +42,7 @@ const generateImageWithOpenAI = async (description, styles) => {
 };
 
 const generatePrompt = (description, styles) => {
-  return `${description} ${styles.join(', ')}`;
+  return `${description} ${(styles ?? []).join(', ')}`;
 };
 
 const extractStyles = (properties) => {
@@ -60,18 +60,22 @@ const generateBannerImage = async (pageData) => {
 
 const generateBannerForNewPages = async () => {
   const newPages = await getNewPagesFromNotion();
-  const pagesWithSummaries = getPageSummariesAndProperties(newPages);
-  console.log('Pages with summaries and additional properties:', pagesWithSummaries);
-  const pagesWithSummariesAndStyles = pagesWithSummaries.map(page => ({
-    ...page,
-    styles: extractStyles(page.properties)
-  }));
 
   try {
-    const banners = await Promise.all(pagesWithSummariesAndStyles.map(async (page) => {
-      if (page.summary) {
-        return await generateImageWithOpenAI(page.summary, page.styles);
+    const banners = await Promise.all(newPages.map(async (page) => {
+      const pageWithSummaries = getPageSummariesAndProperties(page);
+      console.log('Pages with summaries and additional properties:', pageWithSummaries);
+      const pageWithStyles = pageWithSummaries.map(page => ({
+        ...page,
+        styles: extractStyles(page.properties)
+      }));
+
+      if (pageWithSummaries.summary) {
+        const imageUrl = await generateImageWithOpenAI(pageWithSummaries.summary, pageWithSummaries.styles);
+
+        await updatePageCover(pageWithSummaries.id, imageUrl);
       }
+
       return null;
     }));
     const successfulBanners = banners.filter(banner => banner !== null);

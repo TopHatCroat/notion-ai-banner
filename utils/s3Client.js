@@ -27,5 +27,7 @@ exports.uploadFile = async (filePath) => {
 
     const s3Result = await s3Client.send(new PutObjectCommand(uploadParams))
 
-    console.log(JSON.stringify(s3Result));
+    return {
+        url: `https://${bucketName}.s3.${region}.amazonaws.com/${uploadParams.Key}`
+    }
 }

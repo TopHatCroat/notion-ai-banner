@@ -3,8 +3,7 @@ POST http://localhost:3000/generate-banner
 Content-Type: application/json
 
 {
-  "title": "Sample Title",
-  "content": "This is a sample content for the Notion AI Banner app test.",
+  "pageId": "7c07f96bb2ef42f7a72f5bed510806d4",
   "style": [
     "futuristic",
     "bright colors"

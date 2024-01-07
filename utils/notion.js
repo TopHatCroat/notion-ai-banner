@@ -1,6 +1,18 @@
 const notionClient = require('./notionClient');
 const { NOTION_DATABASE_ID } = process.env;
 
+const getSinglePageFromNotion = async (pageId) => {
+    try {
+        const response = await notionClient().get(`pages/${pageId}`);
+
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching page from Notion:', error);
+        console.error('Response data:', error.response.data);
+        throw error;
+    }
+}
+
 const getNewPagesFromNotion = async () => {
   try {
     const response = await notionClient().post(
@@ -22,23 +34,42 @@ const getNewPagesFromNotion = async () => {
   }
 };
 
-const getPageSummariesAndProperties = async (pages) => {
-  return await Promise.all(pages.map(async (page) => {
-    const properties = page.properties;
+const getPageSummariesAndProperties = async (page) => {
+  const properties = page.properties;
 
-    const summary = page.properties.find(property => property.id === 'Title').title[0].plain_text;
+  const title = page.properties['Title'].title[0].plain_text
 
-    const notionPage = await notionClient().get(`pages/${page.id}`);
-    // TODO: Add logic to extract additional properties and summary from the page object
+  const pageContent = await notionClient().get(`blocks/${page.id}/children`);
+  const summary = pageContent.data.results[1].paragraph.rich_text[0].plain_text
 
-    return {
-      id: page.id,
-      summary
-    };
-  }));
+  return {
+    id: page.id,
+    title,
+    summary
+  };
+};
+
+const updatePageCover = async (pageId, coverUrl) => {
+  try {
+    const response = await notionClient().patch(`pages/${pageId}`, {
+      cover: {
+        type: 'external',
+        external: {
+          url: coverUrl,
+        },
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error('Error updating page cover:', error);
+    console.error('Response data:', error.response.data);
+    throw error;
+  }
 };
 
 module.exports = {
+  getSinglePageFromNotion,
   getNewPagesFromNotion,
-  getPageSummariesAndProperties
+  getPageSummariesAndProperties,
+  updatePageCover
 };
