@@ -9,8 +9,8 @@ const generateImageWithOpenAI = async (prompt) => {
   try {
     const response = await openAiClient.images.generate({
       prompt,
-      model: 'dall-e-2',
-      size: "256x256", // TODO: Upgrade these when fully working
+      model: process.env.OPENAI_IMAGE_MODEL,
+      size: process.env.OPENAI_IMAGE_SIZE,
     });
 
     if (response.data && response.data.length > 0) {

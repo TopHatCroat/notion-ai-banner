@@ -6,18 +6,14 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-    res.send('Notion-AI-Banner Service Running');
-});
-
 const generateBannerRoutes = require('./routes/generateBannerRoutes');
 app.use(generateBannerRoutes);
 
 const { scheduleBannerGenerationTask } = require('./tasks/bannerGenerationTask');
 
-scheduleBannerGenerationTask();
-
-
+if (process.env.ENABLE_CRON_JOB === 'true') {
+    scheduleBannerGenerationTask();
+}
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

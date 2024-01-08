@@ -1,13 +1,9 @@
-### Generate a banner
+### Generate a banner for a single page, overwriting any existing banner
 POST http://localhost:3000/generate-banner
 Content-Type: application/json
 
 {
-  "pageId": "7c07f96bb2ef42f7a72f5bed510806d4",
-  "style": [
-    "futuristic",
-    "bright colors"
-  ]
+  "pageId": "7c07f96bb2ef42f7a72f5bed510806d4"
 }
 
 ### Manually trigger banner generation service
