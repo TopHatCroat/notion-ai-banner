@@ -1,5 +1,5 @@
 const notionClient = require('./notionClient');
-const { filterPage } = require('../notion-transformer');
+const { filterPage, extractOpenAiPrompt } = require('../notion-transformer');
 const { NOTION_DATABASE_ID } = process.env;
 
 const getSinglePageFromNotion = async (pageId) => {
@@ -29,19 +29,10 @@ const getNewPagesFromNotion = async () => {
   }
 };
 
-const getPageSummariesAndProperties = async (page) => {
-  const properties = page.properties;
+const getOpenAiPromptForPage = async (page) => {
+  const pageChildren = await notionClient().get(`blocks/${page.id}/children`);
 
-  const title = page.properties['Title'].title[0].plain_text
-
-  const pageContent = await notionClient().get(`blocks/${page.id}/children`);
-  const summary = pageContent.data.results[1].paragraph.rich_text[0].plain_text
-
-  return {
-    id: page.id,
-    title,
-    summary
-  };
+  return extractOpenAiPrompt(page, pageChildren.data);
 };
 
 const updatePageCover = async (pageId, coverUrl) => {
@@ -65,6 +56,6 @@ const updatePageCover = async (pageId, coverUrl) => {
 module.exports = {
   getSinglePageFromNotion,
   getNewPagesFromNotion,
-  getPageSummariesAndProperties,
+  getOpenAiPromptForPage,
   updatePageCover
 };

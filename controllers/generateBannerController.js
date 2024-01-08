@@ -1,6 +1,6 @@
-const { generateBannerImage } = require('../services/bannerGenerationService');
+const { generateImageWithOpenAI } = require('../services/bannerGenerationService');
 const { generateBannerForNewPages } = require('../services/bannerGenerationService');
-const { getSinglePageFromNotion, getPageSummariesAndProperties, updatePageCover } = require("../utils/notion");
+const { getSinglePageFromNotion, getOpenAiPromptForPage, updatePageCover } = require("../utils/notion");
 
 const handleGenerateBanner = async (req, res) => {
   const { pageId } = req.body;
@@ -15,16 +15,16 @@ const handleGenerateBanner = async (req, res) => {
     // Convert the received styles to the format expected by the extractStyles function
     const page = await getSinglePageFromNotion(pageId);
 
-    const pageData = await getPageSummariesAndProperties(page);
+    const prompt = await getOpenAiPromptForPage(page);
 
-    const imageUrl = await generateBannerImage(pageData);
+    const imageUrl = await generateImageWithOpenAI(prompt);
     // INPUT_REQUIRED {Replace the placeholder below with actual URL path to the generated image, e.g., upload the image to a server and use the file URL here}
-    await updatePageCover(pageData.id, imageUrl);
+    await updatePageCover(page.id, imageUrl);
 
     res.status(200).json({
       message: 'Banner generated successfully',
       imageUrl: imageUrl,
-      pageId: pageData.id,
+      pageId: page.id,
     });
   } catch (error) {
     console.error('Error generating banner image:', error);
