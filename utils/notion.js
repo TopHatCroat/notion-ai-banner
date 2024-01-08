@@ -1,4 +1,5 @@
 const notionClient = require('./notionClient');
+const { filterPage } = require('../notion-transformer');
 const { NOTION_DATABASE_ID } = process.env;
 
 const getSinglePageFromNotion = async (pageId) => {
@@ -19,14 +20,8 @@ const getNewPagesFromNotion = async () => {
       `databases/${NOTION_DATABASE_ID}/query`,
       { page_size: 100 }
     );
-    // Logic to filter new pages based on last check timestamp or an equivalent approach
 
-    const pagesWithoutCoverImage = response.data.results.filter(page => {
-      return page.cover === null;
-    });
-
-    // return pagesWithoutCoverImage;
-    return [pagesWithoutCoverImage[0]];
+    return response.data.results.filter(filterPage);
   } catch (error) {
     console.error('Error fetching pages from Notion:', error);
     console.error('Response data:', error.response.data);
