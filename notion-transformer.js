@@ -33,7 +33,7 @@ const extractOpenAiPrompt = (page, pageChildren) => {
     }).join(', ')
 
     return `
-    Generate an image with the title ${title} described as ${description}.
+    Generate an image with the title "${title}", described as ${description}.
     This image should show the emotions: ${emotions}.
     It should show characters: ${participants}.
     The locations are: ${locations}.

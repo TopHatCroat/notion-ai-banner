@@ -6,61 +6,66 @@ const path = require('path');
 const openAiClient = require('../utils/openAiClient');
 
 const generateImageWithOpenAI = async (prompt) => {
-  try {
-    const response = await openAiClient.images.generate({
-      prompt,
-      model: process.env.OPENAI_IMAGE_MODEL,
-      size: process.env.OPENAI_IMAGE_SIZE,
-    });
+    try {
+        const response = await openAiClient.images.generate({
+            prompt,
+            model: process.env.OPENAI_IMAGE_MODEL,
+            size: process.env.OPENAI_IMAGE_SIZE,
+        });
 
-    if (response.data && response.data.length > 0) {
-      const imageUrl = response.data[0].url;
+        if (response.data && response.data.length > 0) {
+            const imageUrl = response.data[0].url;
 
-      const image = await (await fetch(imageUrl)).blob();
-      const imageBytes = await image.arrayBuffer();
-      const buffer = Buffer.from(imageBytes, 'binary');
-      const resizedBuffer = await sharp(buffer)
-        .resize(1500, 600)
-        .toBuffer();
+            const image = await (await fetch(imageUrl)).blob();
+            const imageBytes = await image.arrayBuffer();
+            const buffer = Buffer.from(imageBytes, 'binary');
+            const resizedBuffer = await sharp(buffer)
+                .resize(1500, 600)
+                .toBuffer();
 
-      const fileName = `banner-${Date.now()}.png`;
-      const filePath = path.resolve(__dirname, '../banners', fileName);
+            const fileName = `banner-${Date.now()}.png`;
+            const filePath = path.resolve(__dirname, '../banners', fileName);
 
-      await fs.promises.writeFile(filePath, resizedBuffer);
+            await fs.promises.writeFile(filePath, resizedBuffer);
 
-      const { url } = await s3Client.uploadFile(filePath);
+            const { url } = await s3Client.uploadFile(filePath);
 
-      return url;
-    } else {
-      throw new Error('No image data received from OpenAI API.');
+            return url;
+        } else {
+            throw new Error('No image data received from OpenAI API.');
+        }
+    } catch (error) {
+        console.error('Error generating image with OpenAI:', error);
+        throw error;
     }
-  } catch (error) {
-    console.error('Error generating image with OpenAI:', error);
-    throw error;
-  }
 };
 
 const generateBannerForNewPages = async () => {
-  const newPages = await getNewPagesFromNotion();
+    const newPages = await getNewPagesFromNotion();
 
-  try {
-    const banners = await Promise.all(newPages.map(async (page) => {
-      const prompt = getOpenAiPromptForPage(page);
+    console.log(`Generating new banners for ${newPages.length} pages`);
 
-      const imageUrl = await generateImageWithOpenAI(prompt);
+    for (let i = 0; i < newPages.length; i++) {
+        try {
+            const page = newPages[i];
+            const prompt = await getOpenAiPromptForPage(page);
 
-      await updatePageCover(page.id, imageUrl);
+            console.log(`[${i + 1}/${newPages.length}] Generating banner for page ${page.id} with prompt: ${prompt}`);
 
-      return null;
-    }));
-    const successfulBanners = banners.filter(banner => banner !== null);
-    console.log('Generated banners:', successfulBanners);
-  } catch (error) {
-    console.error('Failed to generate banners:', error);
-  }
+            const imageUrl = await generateImageWithOpenAI(prompt);
+
+            await updatePageCover(page.id, imageUrl);
+
+            console.log(`[${i + 1}/${newPages.length}] Banner generated for page ${page.id}`);
+        } catch (error) {
+            console.error('Failed to generate banners:', error);
+        }
+    }
+
+    console.log('Finished generating banners');
 };
 
 module.exports = {
-  generateImageWithOpenAI,
-  generateBannerForNewPages
+    generateImageWithOpenAI,
+    generateBannerForNewPages
 };
