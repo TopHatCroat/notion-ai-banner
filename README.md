@@ -1,6 +1,8 @@
 # Notion-AI-Banner
 
-Notion-AI-Banner is a service that automates the generation of image banners for Notion pages by using OpenAI's Dall-e image generation capabilities. This service detects new pages within a Notion database at regular intervals and creates summary banners that align with the content and specified tagging of the Notion pages.
+Notion-AI-Banner is a service that automates the generation of image banners for Notion pages by using OpenAI's Dall-e
+image generation capabilities. This service detects new pages within a Notion database at regular intervals and creates
+summary banners that align with the content and specified tagging of the Notion pages.
 
 ## Features
 
@@ -29,7 +31,8 @@ Notion-AI-Banner is a service that automates the generation of image banners for
 Below is a description of key files and directories in the project:
 
 - `/package.json`: Contains project metadata and dependencies.
-- `/.env`: Stores configuration and sensitive credentials. (Ensure this file is not checked into version control).
+- `/.env.template`: Template configuration and sensitive credentials. Fill it up with your own credentials and rename it
+  to `.env`.
 - `/app.js`: The entry point of the application server.
 - `/controllers`: Contains the logic to handle banner generation endpoints.
 - `/routes`: Defines the HTTP endpoints for the service.
@@ -45,7 +48,7 @@ To set up the project for development:
 
 1. Clone the repository.
 2. Install dependencies with `npm install`.
-3. Create an `.env` file based on the provided `.env.example` with Notion and OpenAI API credentials.
+3. Create an `.env` file based on the provided `.env.template` with Notion, OpenAI API and S3 credentials.
 4. Run the service using `npm start`.
 
 ## Usage
