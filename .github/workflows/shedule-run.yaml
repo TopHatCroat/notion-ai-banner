@@ -1,8 +1,8 @@
 name: Schedule run
 on:
   schedule:
-    # Run e2e test suite every weekday at 18h (currently affected by daylight saving time)
-    - cron:  '0 8,9 * * *'
+    # Run every hour from 6am to 8am UTC
+    - cron:  '0 6,7,8 * * *'
   workflow_dispatch:
 
 jobs:
