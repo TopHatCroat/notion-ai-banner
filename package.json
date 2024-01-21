@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js serve",
+    "generate-all": "node app.js generate-all",
+    "generate-single": "node app.js generate-single --id $ID"
   },
   "keywords": [],
   "author": "",
