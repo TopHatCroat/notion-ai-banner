@@ -8,9 +8,8 @@ const getSinglePageFromNotion = async (pageId) => {
 
         return response.data;
     } catch (error) {
-        console.error('Error fetching page from Notion:', error);
         console.error('Response data:', error.response.data);
-        throw error;
+        throw new Error('Failed to get a page from Notion API');
     }
 }
 
@@ -23,9 +22,8 @@ const getNewPagesFromNotion = async () => {
 
     return response.data.results.filter(filterPage);
   } catch (error) {
-    console.error('Error fetching pages from Notion:', error);
     console.error('Response data:', error.response.data);
-    throw error;
+    throw new Error('Failed to get new pages from Notion API');
   }
 };
 
@@ -46,9 +44,8 @@ const updatePageCover = async (pageId, coverUrl) => {
         },
     });
   } catch (error) {
-    console.error('Error updating page cover:', error);
     console.error('Response data:', error.response.data);
-    throw error;
+    throw new Error('Failed to update a page cover with Notion API');
   }
 };
 

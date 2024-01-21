@@ -58,7 +58,7 @@ const generateBannerForNewPages = async () => {
 
             console.log(`[${i + 1}/${newPages.length}] Banner generated for page ${page.id}`);
         } catch (error) {
-            console.error('Failed to generate banners:', error);
+            console.error('Failed to generate banners!');
         }
     }
 
