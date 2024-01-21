@@ -19,7 +19,6 @@ summary banners that align with the content and specified tagging of the Notion 
 - Dotenv
 - OpenAI
 - cron
-- ejs
 - CSS3
 - HTML
 - Bootstrap
@@ -41,6 +40,8 @@ Below is a description of key files and directories in the project:
 - `/utils`: Utility modules for interacting with external APIs.
 - `/services`: Business logic related to banner generation.
 - `/banners`: Directory where generated banners are stored.
+- `notion-transformer.js`: Contains the logic to transform Notion page data into a format that can be used by the
+  service. Change this file to customize the prompt you send to Dall-e model to generate banners.
 
 ## Installation
 
@@ -65,7 +66,3 @@ Refer to `requests.http` for examples of how to use these endpoints.
 Contributions are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-## License
-
-This project is licensed under the ISC License - see the `LICENSE` file for details.
