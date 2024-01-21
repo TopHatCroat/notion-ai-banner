@@ -1,28 +1,24 @@
 # Notion-AI-Banner
 
-Notion-AI-Banner is a service that automates the generation of image banners for Notion pages by using OpenAI's Dall-e
-image generation capabilities. This service detects new pages within a Notion database at regular intervals and creates
-summary banners that align with the content and specified tagging of the Notion pages.
+Notion-AI-Banner is an app that automates the generation of image banners for Notion pages by using OpenAI's Dall-e
+image generation. 
 
 ## Features
 
-- Automatic detection of new pages in a Notion database at 15-minute intervals.
-- Image banner generation based on content summary and specified Notion properties.
-- Customizable influence of Notion properties on banner style.
-- Generated images are 1500x600 pixels in resolution.
+- Various ways to run the app: as a standalone script, as a server or as a scheduled task.
+- Customizable prompt generation and page filtering defined in `notion-transformer.js`.
+- GitHub Actions workflow to automatically generate banners for all pages on a daily basis or a single page on demand.
+- Currently it requires images to be uploaded to S3 due to [Notion API not supporting image uploads yet](https://developers.notion.com/reference/file-object).
 
-## Technologies
+## Technologies and libraries used
 
 - Node.js
 - Express
+- yargs
 - axios
 - Dotenv
 - OpenAI
 - cron
-- CSS3
-- HTML
-- Bootstrap
-- Socket.io
 - sharp
 
 ## Project Structure
@@ -53,6 +49,15 @@ To set up the project for development:
 4. Run the service using `npm start`.
 
 ## Usage
+
+#### Run single page banner generation
+
+* `node app.js generate-single --id=[Notion Page ID]` - Generate banner for a page with a given ID
+* `node app.js generate-all` - Generate banners for all pages based on the filter in `notion-transformer.js`
+
+#### Run server
+
+* `node app.js serve` - Run the server
 
 The service exposes endpoints to manually generate banners and trigger the automatic generation process:
 
