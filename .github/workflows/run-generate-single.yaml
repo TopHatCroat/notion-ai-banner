@@ -40,7 +40,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run generate all
+      - name: Copy env file
+        run: cp .env.template .env
+
+      - name: Run generate single
         run: ID=${{ github.event.inputs.pageId }} npm run generate-single
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
