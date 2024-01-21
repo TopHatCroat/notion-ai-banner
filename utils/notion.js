@@ -37,15 +37,14 @@ const getOpenAiPromptForPage = async (page) => {
 
 const updatePageCover = async (pageId, coverUrl) => {
   try {
-    const response = await notionClient().patch(`pages/${pageId}`, {
-      cover: {
-        type: 'external',
-        external: {
-          url: coverUrl,
+      return await notionClient().patch(`pages/${pageId}`, {
+        cover: {
+            type: 'external',
+            external: {
+                url: coverUrl,
+            },
         },
-      },
     });
-    return response;
   } catch (error) {
     console.error('Error updating page cover:', error);
     console.error('Response data:', error.response.data);

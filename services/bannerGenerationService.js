@@ -1,4 +1,4 @@
-const { getNewPagesFromNotion, getOpenAiPromptForPage, updatePageCover } = require('../utils/notion');
+const { getNewPagesFromNotion, getOpenAiPromptForPage, updatePageCover, getSinglePageFromNotion } = require('../utils/notion');
 const s3Client = require('../utils/s3Client');
 const sharp = require('sharp');
 const fs = require('fs');
@@ -65,7 +65,23 @@ const generateBannerForNewPages = async () => {
     console.log('Finished generating banners');
 };
 
+const generateSingleBanner = async (pageId) => {
+    // Convert the received styles to the format expected by the extractStyles function
+
+    const prompt = await getOpenAiPromptForPage(page);
+
+    console.log(`Generating banner for page ${pageId} with prompt: ${prompt}`);
+
+    const page = await getSinglePageFromNotion(pageId);
+
+    const imageUrl = await generateImageWithOpenAI(prompt);
+    // INPUT_REQUIRED {Replace the placeholder below with actual URL path to the generated image, e.g., upload the image to a server and use the file URL here}
+    await updatePageCover(page.id, imageUrl);
+
+    console.log(`Banner generated for page ${page.id}`);
+}
+
 module.exports = {
-    generateImageWithOpenAI,
+    generateSingleBanner,
     generateBannerForNewPages
 };
