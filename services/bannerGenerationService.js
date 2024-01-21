@@ -67,12 +67,11 @@ const generateBannerForNewPages = async () => {
 
 const generateSingleBanner = async (pageId) => {
     // Convert the received styles to the format expected by the extractStyles function
+    const page = await getSinglePageFromNotion(pageId);
 
     const prompt = await getOpenAiPromptForPage(page);
 
     console.log(`Generating banner for page ${pageId} with prompt: ${prompt}`);
-
-    const page = await getSinglePageFromNotion(pageId);
 
     const imageUrl = await generateImageWithOpenAI(prompt);
     // INPUT_REQUIRED {Replace the placeholder below with actual URL path to the generated image, e.g., upload the image to a server and use the file URL here}
